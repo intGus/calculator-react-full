@@ -111,7 +111,7 @@ function evaluate( {currentOperand, previousOperand, operation}) {
       computation = prev * current
       break
     case "/":
-      computation = prev - current
+      computation = prev / current
       break
   }
 
