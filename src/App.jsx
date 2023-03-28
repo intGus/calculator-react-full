@@ -21,7 +21,9 @@ function reducer(state, { type, payload }) {
         }
       }
       if (payload.children === '0' && state.currentOperand === '0') return state
-      if (payload.children === '.' && state.currentOperand.includes('.')) return state
+      if (payload.children === '.' && state.currentOperand) {
+        if (state.currentOperand.includes('.')) return state
+      }
       return {
         ...state,
         currentOperand: `${state.currentOperand || ''}${payload.children}`,
@@ -95,6 +97,19 @@ function reducer(state, { type, payload }) {
   }
 }
 
+const INTEGER_FORMATTER = new Intl.NumberFormat('en-us', {
+  maximumFractionDigits: 0,
+})
+
+function formatOperand(operand) {
+  if (operand == null) return
+  const [integer, decimal] = operand.split('.')
+  if (decimal == null) {
+    return INTEGER_FORMATTER.format(integer)
+  }
+  return `${INTEGER_FORMATTER.format(integer)}.${decimal}`
+}
+
 function evaluate( {currentOperand, previousOperand, operation}) {
   const prev = parseFloat(previousOperand)
   const current = parseFloat(currentOperand)
@@ -127,8 +142,8 @@ function App() {
   return (
     <div className='calculator-grid'>
       <div className='output'>
-        <div className='previous-operand'>{previousOperand} {operation}</div>
-        <div className='current-operand'>{currentOperand}</div>
+        <div className='previous-operand'>{formatOperand(previousOperand)} {operation}</div>
+        <div className='current-operand'>{formatOperand(currentOperand)}</div>
       </div>
       <Button dispatch={dispatch} style='span-two' >AC</Button>
       <Button dispatch={dispatch}>DEL</Button>
